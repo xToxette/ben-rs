@@ -1,8 +1,8 @@
 #![warn(clippy::str_to_string)]
 
-mod common;
 mod dal;
 mod event_handler;
+mod commands;
 
 use sqlx::{sqlite::SqlitePoolOptions, Acquire};
 use poise::{Event, serenity_prelude as serenity};
@@ -42,7 +42,7 @@ async fn main() {
     env_logger::init();
 
     let options = poise::FrameworkOptions {
-        commands: vec![common::information()],
+        commands: vec![commands::utilities::common::information()],
         prefix_options: poise::PrefixFrameworkOptions {
             prefix: Some("#".into()),
             additional_prefixes: vec![
