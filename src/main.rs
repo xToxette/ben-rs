@@ -37,7 +37,8 @@ async fn main() {
 
     let options = poise::FrameworkOptions {
         commands: vec![
-            commands::utilities::common::information()
+            commands::utilities::common::information(),
+            commands::utilities::common::performance(),
         ],
         prefix_options: prefix_options(),
         on_error: handlers::error::handler,
