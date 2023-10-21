@@ -12,6 +12,7 @@ pub async fn information(
         m.content("Ben is currently being development")
             .embed(|e| {
                 e.title("Development")
+                    .description("Please contribute, otherwise I'm so lonely: https://github.com/xToxette/ben-rs")
                     .timestamp(Timestamp::now())
             })
     }).await;

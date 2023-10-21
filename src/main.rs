@@ -1,16 +1,23 @@
 #![warn(clippy::str_to_string)]
 
 mod common;
+mod dal;
+mod event_handler;
 
-use poise::serenity_prelude as serenity;
+use sqlx::{sqlite::SqlitePoolOptions, Acquire};
+use poise::{Event, serenity_prelude as serenity};
 use std::{collections::HashMap, env::var, sync::Mutex, time::Duration};
+use sqlx::{SqliteConnection, SqlitePool};
+use std::{option};
+
+use serenity::VoiceState;
 
 type Error = Box<dyn std::error::Error + Send + Sync>;
 type Context<'a> = poise::Context<'a, Data, Error>;
 
 // Custom user data passes to all command functions
 pub struct Data {
-    ben: Mutex<bool>,
+    conn_pool: SqlitePool,
 }
 
 async fn on_error(error: poise::FrameworkError<'_, Data, Error>) {
@@ -26,6 +33,7 @@ async fn on_error(error: poise::FrameworkError<'_, Data, Error>) {
         }
     }
 }
+
 
 #[tokio::main]
 async fn main() {
@@ -53,16 +61,8 @@ async fn main() {
                 println!("Executed command {}!", ctx.command().qualified_name)
             })
         },
-        command_check: Some(|ctx| {
-            Box::pin(async move {
-                Ok(true)
-            })
-        }),
         event_handler: |_ctx, event, _framework, _data| {
-            Box::pin(async move {
-                println!("Got an event in event handler: {:?}", event.name());
-                Ok(())
-            })
+            Box::pin(event_handler::main_handler(_ctx, event, _framework, _data))
         },
         ..Default::default()
     };
@@ -76,14 +76,22 @@ async fn main() {
             Box::pin(async move {
                 println!("Logged in as {}", _ready.user.name);
                 poise::builtins::register_globally(ctx, &framework.options().commands).await?;
-                Ok(Data {
-                    ben: Mutex::new(true),
-                })
+
+                let database_url = var("DATABASE_URL").expect("Missing `DATABASE_URL` env var");
+                let data = Data {
+                    conn_pool: SqlitePool::connect(&database_url).await?
+                };
+                sqlx::migrate!().run(&data.conn_pool).await?;
+
+                Ok(data)
             })
         })
         .options(options)
         .intents(
-            serenity::GatewayIntents::GUILD_MESSAGES | serenity::GatewayIntents::MESSAGE_CONTENT,
+            serenity::GatewayIntents::GUILD_MESSAGES
+                | serenity::GatewayIntents::MESSAGE_CONTENT
+                | serenity::GatewayIntents::GUILDS
+                | serenity::GatewayIntents::GUILD_VOICE_STATES,
         )
         .run()
         .await
