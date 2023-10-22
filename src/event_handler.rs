@@ -13,7 +13,6 @@ pub fn main_handler<'a>(
                 dal::events::voice_state_update::insert(&data.conn_pool, &new).await?;
             }
             Event::Message { new_message : _} => {
-                todo!()
             }
             _ => {}
         }
