@@ -1,4 +1,4 @@
-use crate::{Context, Error, Data};
+use crate::{Error, Data};
 use poise::{
     serenity_prelude::{
         Context as SerenityContext,
@@ -27,8 +27,6 @@ pub fn handler<'a>(
         let data = Data {
             conn_pool: SqlitePool::connect(&database_url).await?
         };
-        sqlx::migrate!().run(&data.conn_pool).await?;
-
         Ok(data)
     })
 }

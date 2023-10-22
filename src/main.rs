@@ -5,11 +5,10 @@ mod event_handler;
 mod commands;
 mod handlers;
 
-use sqlx::{sqlite::SqlitePoolOptions, Acquire};
-use poise::{Event, serenity_prelude as serenity};
-use std::{collections::HashMap, env::var, sync::Mutex, time::Duration};
-use sqlx::{SqliteConnection, SqlitePool};
-use songbird::serenity::SerenityInit;
+use poise::{serenity_prelude as serenity};
+use std::{env::var};
+use sqlx::{SqlitePool};
+// use songbird::serenity::SerenityInit;
 
 type Error = Box<dyn std::error::Error + Send + Sync>;
 type Context<'a> = poise::Context<'a, Data, Error>;
@@ -39,6 +38,7 @@ async fn main() {
         commands: vec![
             commands::utilities::common::information(),
             commands::utilities::common::performance(),
+            commands::tracking::tracking(),
         ],
         prefix_options: prefix_options(),
         on_error: handlers::error::handler,

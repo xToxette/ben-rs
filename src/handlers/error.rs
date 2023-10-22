@@ -1,4 +1,4 @@
-use crate::{Context, Error, Data};
+use crate::{Error, Data};
 use poise::{
     BoxFuture
 };

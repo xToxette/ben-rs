@@ -1,9 +1,7 @@
-use poise::{CreateReply, serenity_prelude as serenity};
+use poise::{serenity_prelude as serenity};
 use serenity::Timestamp;
 use crate::{Context, Error};
-use sysinfo::{CpuExt, System, SystemExt};
-
-use serenity::builder::{CreateEmbed, CreateMessage};
+use sysinfo::{System, SystemExt};
 
 /// Informs you about the meaning of ben's existence
 #[poise::command(prefix_command, slash_command, ephemeral, broadcast_typing)]
@@ -38,20 +36,32 @@ pub async fn performance(
     ctx: Context<'_>,
     #[description = "What to check"] category: PerformanceType
 ) -> Result<(), Error> {
-    let mut system = System::new_all();
+    let system = System::new_all();
 
     match category {
-        PerformanceType::CPU => {
-            ctx.send(|m| {
-                m.content(format!("{}", system.global_cpu_info().cpu_usage()))
-            }).await?;
-        }
         PerformanceType::RAM => {
             ctx.send(|m| {
-                m.content(format!("RAM: {}gb used /{}gb total", system.available_memory() / 1073741824, system.total_memory() / 1073741824))
+                m.content("Here is the performance information that you requested")
+                    .embed(|e| {
+                        e.title("Performance")
+                            .fields(vec![
+                                ("\u{200B}", &format!("```cs\n[total]\n``````py\n{} GB\n```", system.total_memory() / 1073741824), true),
+                                ("\u{200B}", &format!("```cs\n[used]\n``````py\n{} GB\n```", system.used_memory() / 1073741824), true),
+                                ("\u{200B}", &format!("```cs\n[free]\n``````py\n{} GB\n```", system.available_memory() / 1073741824), true),
+                            ])
+                    })
             }).await?;
         }
-        _ => {}
+        _ => {
+            ctx.send(|m| {
+                m.content("The metric you requested has not been implemented yet")
+                    .embed(|e| {
+                        e.title("Development")
+                            .description("But you can implement it yourself: https://github.com/xToxette/ben-rs")
+                            .timestamp(Timestamp::now())
+                })
+            }).await?;
+        }
     }
     Ok(())
 }

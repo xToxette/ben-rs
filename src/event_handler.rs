@@ -1,4 +1,4 @@
-use crate::{Context, Error, Data, dal};
+use crate::{Error, Data, dal};
 use poise::{BoxFuture, Event, serenity_prelude as serenity};
 
 pub fn main_handler<'a>(
@@ -9,11 +9,11 @@ pub fn main_handler<'a>(
 ) -> BoxFuture<'a, Result<(), Error>> {
     Box::pin(async move {
         match event {
-            Event::VoiceStateUpdate { old, new } => {
+            Event::VoiceStateUpdate { old: _, new } => {
                 dal::events::voice_state_update::insert(&data.conn_pool, &new).await?;
             }
-            Event::Message { new_message } => {
-                // println!("Message: {:#?}", new_message);
+            Event::Message { new_message : _} => {
+                todo!()
             }
             _ => {}
         }
