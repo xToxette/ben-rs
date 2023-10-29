@@ -6,6 +6,8 @@ Uses [poise](https://github.com/serenity-rs/poise) for handling user request and
 # contributing
 To contribute to developing the bot, you'll need to install the rust programming language.
 
- - [rust lang](https://www.rust-lang.org/tools/install) Obviously because this bot is developed using rust.
+ - [rust lang](https://www.rust-lang.org/tools/install)
+
+In the .env.example file, fill in the `DISCORD_TOKEN` environment variable and rename it to .env
 
 
