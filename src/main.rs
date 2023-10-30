@@ -1,17 +1,21 @@
 #![warn(clippy::str_to_string)]
 
+#[macro_use]
+extern crate log;
+
 mod dal;
 mod event_handler;
 mod commands;
 mod handlers;
 
-use poise::{serenity_prelude as serenity};
-use std::{env::var};
-use sqlx::{SqlitePool};
-// use songbird::serenity::SerenityInit;
+use poise::serenity_prelude as serenity;
+use songbird::SerenityInit;
+use std::env::var;
+use sqlx::SqlitePool;
 
 type Error = Box<dyn std::error::Error + Send + Sync>;
 type Context<'a> = poise::Context<'a, Data, Error>;
+
 
 // Custom user data passes to all command functions
 pub struct Data {
@@ -51,6 +55,7 @@ async fn main() {
     poise::Framework::builder()
         .token(var("DISCORD_TOKEN").expect("Missing `DISCORD_TOKEN` env var") )
         .setup(handlers::setup::handler)
+        .client_settings(|c| c.register_songbird()) 
         .options(options)
         .intents(
             serenity::GatewayIntents::GUILD_MESSAGES

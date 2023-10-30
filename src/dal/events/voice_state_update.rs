@@ -5,11 +5,11 @@ use crate::{dal, dal::models};
 /// Inserts a voice state update event into the table
 /// Automatically handles inserting a new row into the general_info table
 pub async fn insert(executor: &SqlitePool, voice_state: &VoiceState) -> Result<sqlite::SqliteQueryResult, Error> {
-    let general_info_result =
-        dal::events::general_info::insert(&executor,
-      std::time::UNIX_EPOCH.elapsed().unwrap().as_secs() as i64,
-      voice_state.user_id.0 as i64,
-      voice_state.guild_id.map(|i| i.0 as i64)).await?;
+    let general_info_result = dal::events::general_info::insert(&executor,
+        std::time::UNIX_EPOCH.elapsed().unwrap().as_secs() as i64,
+        voice_state.user_id.0 as i64,
+        voice_state.guild_id.map(|i| i.0 as i64)
+    ).await?;
 
     let general_info_id = general_info_result.last_insert_rowid();
 
